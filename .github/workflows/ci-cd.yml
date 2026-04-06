@@ -9,25 +9,31 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        pip install -r airbnb/requirements.txt
-        pip install -r covid19/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r airbnb/requirements.txt
+          python -m pip install -r covid19/requirements.txt
 
-    - name: Run Airbnb tests
-      run: |
-        pytest airbnb/tests --junitxml=airbnb/pytest_report.xml
+      - name: Show workspace
+        run: |
+          pwd
+          ls -R
 
-    - name: Run COVID tests
-      run: |
-        pytest covid19/tests --junitxml=covid19/pytest_report.xml
+      - name: Run Airbnb tests
+        run: python -m pytest airbnb/tests -v --junitxml=airbnb/pytest_report.xml
+
+      - name: Run COVID tests
+        run: python -m pytest covid19/tests -v --junitxml=covid19/pytest_report.xml
