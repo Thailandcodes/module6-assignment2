@@ -1,0 +1,33 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install -r airbnb/requirements.txt
+        pip install -r covid19/requirements.txt
+
+    - name: Run Airbnb tests
+      run: |
+        pytest airbnb/tests --junitxml=airbnb/pytest_report.xml
+
+    - name: Run COVID tests
+      run: |
+        pytest covid19/tests --junitxml=covid19/pytest_report.xml
